@@ -5,9 +5,10 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_toggle_icon.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:math';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -17,10 +18,10 @@ import 'favourites_list_model.dart';
 export 'favourites_list_model.dart';
 
 class FavouritesListWidget extends StatefulWidget {
-  const FavouritesListWidget({Key? key}) : super(key: key);
+  const FavouritesListWidget({super.key});
 
   @override
-  _FavouritesListWidgetState createState() => _FavouritesListWidgetState();
+  State<FavouritesListWidget> createState() => _FavouritesListWidgetState();
 }
 
 class _FavouritesListWidgetState extends State<FavouritesListWidget>
@@ -30,58 +31,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
   final scaffoldKey = GlobalKey<ScaffoldState>();
   var hasToggleIconTriggered1 = false;
   var hasToggleIconTriggered2 = false;
-  final animationsMap = {
-    'cardOnPageLoadAnimation1': AnimationInfo(
-      trigger: AnimationTrigger.onPageLoad,
-      effects: [
-        MoveEffect(
-          curve: Curves.bounceOut,
-          delay: 50.ms,
-          duration: 600.ms,
-          begin: Offset(0.0, 20.0),
-          end: Offset(0.0, 0.0),
-        ),
-      ],
-    ),
-    'toggleIconOnActionTriggerAnimation1': AnimationInfo(
-      trigger: AnimationTrigger.onActionTrigger,
-      applyInitialState: false,
-      effects: [
-        ScaleEffect(
-          curve: Curves.bounceOut,
-          delay: 100.ms,
-          duration: 600.ms,
-          begin: Offset(0.5, 0.5),
-          end: Offset(1.0, 1.0),
-        ),
-      ],
-    ),
-    'cardOnPageLoadAnimation2': AnimationInfo(
-      trigger: AnimationTrigger.onPageLoad,
-      effects: [
-        MoveEffect(
-          curve: Curves.bounceOut,
-          delay: 50.ms,
-          duration: 600.ms,
-          begin: Offset(0.0, 20.0),
-          end: Offset(0.0, 0.0),
-        ),
-      ],
-    ),
-    'toggleIconOnActionTriggerAnimation2': AnimationInfo(
-      trigger: AnimationTrigger.onActionTrigger,
-      applyInitialState: false,
-      effects: [
-        ScaleEffect(
-          curve: Curves.bounceOut,
-          delay: 100.ms,
-          duration: 600.ms,
-          begin: Offset(0.5, 0.5),
-          end: Offset(1.0, 1.0),
-        ),
-      ],
-    ),
-  };
+  final animationsMap = <String, AnimationInfo>{};
 
   @override
   void initState() {
@@ -92,7 +42,59 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
       vsync: this,
       length: 2,
       initialIndex: 0,
-    )..addListener(() => setState(() {}));
+    )..addListener(() => safeSetState(() {}));
+    animationsMap.addAll({
+      'cardOnPageLoadAnimation1': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          MoveEffect(
+            curve: Curves.bounceOut,
+            delay: 50.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.0, 20.0),
+            end: Offset(0.0, 0.0),
+          ),
+        ],
+      ),
+      'toggleIconOnActionTriggerAnimation1': AnimationInfo(
+        trigger: AnimationTrigger.onActionTrigger,
+        applyInitialState: false,
+        effectsBuilder: () => [
+          ScaleEffect(
+            curve: Curves.bounceOut,
+            delay: 100.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.5, 0.5),
+            end: Offset(1.0, 1.0),
+          ),
+        ],
+      ),
+      'cardOnPageLoadAnimation2': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          MoveEffect(
+            curve: Curves.bounceOut,
+            delay: 50.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.0, 20.0),
+            end: Offset(0.0, 0.0),
+          ),
+        ],
+      ),
+      'toggleIconOnActionTriggerAnimation2': AnimationInfo(
+        trigger: AnimationTrigger.onActionTrigger,
+        applyInitialState: false,
+        effectsBuilder: () => [
+          ScaleEffect(
+            curve: Curves.bounceOut,
+            delay: 100.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.5, 0.5),
+            end: Offset(1.0, 1.0),
+          ),
+        ],
+      ),
+    });
     setupAnimations(
       animationsMap.values.where((anim) =>
           anim.trigger == AnimationTrigger.onActionTrigger ||
@@ -100,7 +102,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
       this,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -112,21 +114,13 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
 
   @override
   Widget build(BuildContext context) {
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
-
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -179,6 +173,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                     fontFamily: 'Inter',
                                     color: Colors.white,
                                     fontSize: 24.0,
+                                    letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
                                   ),
                             ),
@@ -215,12 +210,15 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                     child: TabBar(
                       labelColor: FlutterFlowTheme.of(context).primaryText,
                       unselectedLabelColor: Color(0x64EEF7F4),
-                      labelStyle: FlutterFlowTheme.of(context).titleSmall,
+                      labelStyle:
+                          FlutterFlowTheme.of(context).titleSmall.override(
+                                fontFamily: 'Inter',
+                                letterSpacing: 0.0,
+                              ),
                       unselectedLabelStyle: TextStyle(),
                       indicatorColor: Color(0x00020303),
                       indicatorWeight: 2.0,
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(4.0, 4.0, 4.0, 4.0),
+                      padding: EdgeInsets.all(4.0),
                       tabs: [
                         Tab(
                           text: 'People',
@@ -230,6 +228,9 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                         ),
                       ],
                       controller: _model.tabBarController,
+                      onTap: (i) async {
+                        [() async {}, () async {}][i]();
+                      },
                     ),
                   ),
                   Expanded(
@@ -247,6 +248,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                 ),
                               );
                             }
+
                             return GridView.builder(
                               padding: EdgeInsets.zero,
                               gridDelegate:
@@ -283,6 +285,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                     }
                                     final cardGetSingleUserResponse =
                                         snapshot.data!;
+
                                     return InkWell(
                                       splashColor: Colors.transparent,
                                       focusColor: Colors.transparent,
@@ -315,9 +318,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                               BorderRadius.circular(8.0),
                                         ),
                                         child: Padding(
-                                          padding:
-                                              EdgeInsetsDirectional.fromSTEB(
-                                                  16.0, 16.0, 16.0, 16.0),
+                                          padding: EdgeInsets.all(16.0),
                                           child: Column(
                                             mainAxisSize: MainAxisSize.max,
                                             mainAxisAlignment:
@@ -341,9 +342,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                   ),
                                                 ),
                                                 child: Padding(
-                                                  padding: EdgeInsetsDirectional
-                                                      .fromSTEB(
-                                                          4.0, 4.0, 4.0, 4.0),
+                                                  padding: EdgeInsets.all(4.0),
                                                   child: Container(
                                                     width: 120.0,
                                                     height: 120.0,
@@ -356,9 +355,10 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                       GitHubGroup
                                                           .getSingleUserCall
                                                           .userPhotoUrl(
-                                                        cardGetSingleUserResponse
-                                                            .jsonBody,
-                                                      ),
+                                                            cardGetSingleUserResponse
+                                                                .jsonBody,
+                                                          )
+                                                          .toString(),
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -384,6 +384,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                       .titleMedium
                                                       .override(
                                                         fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
                                                         fontWeight:
                                                             FontWeight.w600,
                                                       ),
@@ -391,7 +392,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                               ),
                                               ToggleIcon(
                                                 onPressed: () async {
-                                                  setState(
+                                                  safeSetState(
                                                     () => FFAppState()
                                                             .favUsers
                                                             .contains(GitHubGroup
@@ -425,28 +426,26 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                     cardGetSingleUserResponse
                                                         .jsonBody,
                                                   )) {
-                                                    setState(() {
-                                                      FFAppState()
-                                                          .removeFromFavUsers(
-                                                              GitHubGroup
-                                                                  .getSingleUserCall
-                                                                  .username(
-                                                                    cardGetSingleUserResponse
-                                                                        .jsonBody,
-                                                                  )
-                                                                  .toString());
-                                                    });
+                                                    FFAppState()
+                                                        .removeFromFavUsers(
+                                                            GitHubGroup
+                                                                .getSingleUserCall
+                                                                .username(
+                                                                  cardGetSingleUserResponse
+                                                                      .jsonBody,
+                                                                )
+                                                                .toString());
+                                                    safeSetState(() {});
                                                   } else {
-                                                    setState(() {
-                                                      FFAppState().addToFavUsers(
-                                                          GitHubGroup
-                                                              .getSingleUserCall
-                                                              .username(
-                                                                cardGetSingleUserResponse
-                                                                    .jsonBody,
-                                                              )
-                                                              .toString());
-                                                    });
+                                                    FFAppState().addToFavUsers(
+                                                        GitHubGroup
+                                                            .getSingleUserCall
+                                                            .username(
+                                                              cardGetSingleUserResponse
+                                                                  .jsonBody,
+                                                            )
+                                                            .toString());
+                                                    safeSetState(() {});
                                                   }
                                                 },
                                                 value: FFAppState()
@@ -500,6 +499,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                 ),
                               );
                             }
+
                             return ListView.builder(
                               padding: EdgeInsets.fromLTRB(
                                 0,
@@ -534,6 +534,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                     }
                                     final cardGetSingleRepoResponse =
                                         snapshot.data!;
+
                                     return Card(
                                       clipBehavior: Clip.antiAliasWithSaveLayer,
                                       color: FlutterFlowTheme.of(context)
@@ -599,12 +600,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                     ),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  5.0,
-                                                                  5.0,
-                                                                  5.0,
-                                                                  5.0),
+                                                          EdgeInsets.all(5.0),
                                                       child: Row(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
@@ -646,6 +642,8 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                                         .primaryText,
                                                                     fontSize:
                                                                         12.0,
+                                                                    letterSpacing:
+                                                                        0.0,
                                                                   ),
                                                             ),
                                                           ),
@@ -656,7 +654,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                 ),
                                                 ToggleIcon(
                                                   onPressed: () async {
-                                                    setState(
+                                                    safeSetState(
                                                       () => FFAppState()
                                                               .favRepos
                                                               .contains(GitHubGroup
@@ -688,11 +686,10 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                         .favRepos
                                                         .contains(
                                                             favReposItem)) {
-                                                      setState(() {
-                                                        FFAppState()
-                                                            .removeFromFavRepos(
-                                                                favReposItem);
-                                                      });
+                                                      FFAppState()
+                                                          .removeFromFavRepos(
+                                                              favReposItem);
+                                                      safeSetState(() {});
                                                       ScaffoldMessenger.of(
                                                               context)
                                                           .showSnackBar(
@@ -715,11 +712,10 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                         ),
                                                       );
                                                     } else {
-                                                      setState(() {
-                                                        FFAppState()
-                                                            .addToFavRepos(
-                                                                favReposItem);
-                                                      });
+                                                      FFAppState()
+                                                          .addToFavRepos(
+                                                              favReposItem);
+                                                      safeSetState(() {});
                                                       ScaffoldMessenger.of(
                                                               context)
                                                           .showSnackBar(
@@ -782,7 +778,11 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                   .toString(),
                                               style:
                                                   FlutterFlowTheme.of(context)
-                                                      .titleLarge,
+                                                      .titleLarge
+                                                      .override(
+                                                        fontFamily: 'Inter',
+                                                        letterSpacing: 0.0,
+                                                      ),
                                             ),
                                             Text(
                                               GitHubGroup.getSingleRepoCall
@@ -797,6 +797,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                       .override(
                                                         fontFamily: 'Inter',
                                                         fontSize: 12.0,
+                                                        letterSpacing: 0.0,
                                                       ),
                                             ),
                                             Row(
@@ -805,7 +806,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                 Align(
                                                   alignment:
                                                       AlignmentDirectional(
-                                                          0.00, 0.00),
+                                                          0.0, 0.0),
                                                   child: Card(
                                                     clipBehavior: Clip
                                                         .antiAliasWithSaveLayer,
@@ -819,12 +820,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                     ),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  5.0,
-                                                                  5.0,
-                                                                  5.0,
-                                                                  5.0),
+                                                          EdgeInsets.all(5.0),
                                                       child: Row(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
@@ -867,6 +863,8 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                                         .primaryText,
                                                                     fontSize:
                                                                         10.0,
+                                                                    letterSpacing:
+                                                                        0.0,
                                                                   ),
                                                             ),
                                                           ),
@@ -906,12 +904,7 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                     ),
                                                     child: Padding(
                                                       padding:
-                                                          EdgeInsetsDirectional
-                                                              .fromSTEB(
-                                                                  5.0,
-                                                                  5.0,
-                                                                  5.0,
-                                                                  5.0),
+                                                          EdgeInsets.all(5.0),
                                                       child: Row(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
@@ -948,6 +941,8 @@ class _FavouritesListWidgetState extends State<FavouritesListWidget>
                                                                         .primaryText,
                                                                     fontSize:
                                                                         10.0,
+                                                                    letterSpacing:
+                                                                        0.0,
                                                                   ),
                                                             ),
                                                           ),

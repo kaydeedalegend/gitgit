@@ -3,9 +3,9 @@ import '/flutter_flow/flutter_flow_autocomplete_options_list.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:ui';
 import '/flutter_flow/custom_functions.dart' as functions;
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,10 +14,10 @@ import 'home_page_model.dart';
 export 'home_page_model.dart';
 
 class HomePageWidget extends StatefulWidget {
-  const HomePageWidget({Key? key}) : super(key: key);
+  const HomePageWidget({super.key});
 
   @override
-  _HomePageWidgetState createState() => _HomePageWidgetState();
+  State<HomePageWidget> createState() => _HomePageWidgetState();
 }
 
 class _HomePageWidgetState extends State<HomePageWidget> {
@@ -30,9 +30,9 @@ class _HomePageWidgetState extends State<HomePageWidget> {
     super.initState();
     _model = createModel(context, () => HomePageModel());
 
-    _model.usernameFieldController ??= TextEditingController();
+    _model.usernameFieldTextController ??= TextEditingController();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -44,21 +44,13 @@ class _HomePageWidgetState extends State<HomePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
-
     context.watch<FFAppState>();
 
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -138,10 +130,14 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                       optionsViewBuilder: (context, onSelected, options) {
                         return AutocompleteOptionsList(
                           textFieldKey: _model.usernameFieldKey,
-                          textController: _model.usernameFieldController!,
+                          textController: _model.usernameFieldTextController!,
                           options: options.toList(),
                           onSelected: onSelected,
-                          textStyle: FlutterFlowTheme.of(context).bodyMedium,
+                          textStyle:
+                              FlutterFlowTheme.of(context).bodyMedium.override(
+                                    fontFamily: 'Inter',
+                                    letterSpacing: 0.0,
+                                  ),
                           textHighlightStyle: TextStyle(),
                           elevation: 4.0,
                           optionBackgroundColor:
@@ -152,7 +148,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                         );
                       },
                       onSelected: (String selection) {
-                        setState(() =>
+                        safeSetState(() =>
                             _model.usernameFieldSelectedOption = selection);
                         FocusScope.of(context).unfocus();
                       },
@@ -164,21 +160,29 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                       ) {
                         _model.usernameFieldFocusNode = focusNode;
 
-                        _model.usernameFieldController = textEditingController;
+                        _model.usernameFieldTextController =
+                            textEditingController;
                         return TextFormField(
                           key: _model.usernameFieldKey,
                           controller: textEditingController,
                           focusNode: focusNode,
                           onEditingComplete: onEditingComplete,
+                          autofocus: false,
                           obscureText: false,
                           decoration: InputDecoration(
+                            isDense: false,
                             labelText: 'Enter A Username',
-                            labelStyle:
-                                FlutterFlowTheme.of(context).labelMedium,
+                            labelStyle: FlutterFlowTheme.of(context)
+                                .labelMedium
+                                .override(
+                                  fontFamily: 'Inter',
+                                  letterSpacing: 0.0,
+                                ),
                             hintStyle: FlutterFlowTheme.of(context)
                                 .labelMedium
                                 .override(
                                   fontFamily: 'Inter',
+                                  letterSpacing: 0.0,
                                   lineHeight: 2.0,
                                 ),
                             enabledBorder: OutlineInputBorder(
@@ -211,12 +215,15 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                             ),
                             filled: true,
                             fillColor: Color(0x10E0E3E7),
-                            contentPadding: EdgeInsetsDirectional.fromSTEB(
-                                18.0, 18.0, 18.0, 18.0),
+                            contentPadding: EdgeInsets.all(18.0),
                           ),
-                          style: FlutterFlowTheme.of(context).bodyMedium,
+                          style:
+                              FlutterFlowTheme.of(context).bodyMedium.override(
+                                    fontFamily: 'Inter',
+                                    letterSpacing: 0.0,
+                                  ),
                           cursorColor: FlutterFlowTheme.of(context).tertiary,
-                          validator: _model.usernameFieldControllerValidator
+                          validator: _model.usernameFieldTextControllerValidator
                               .asValidator(context),
                         );
                       },
@@ -229,25 +236,25 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                       onPressed: () async {
                         _model.apiResultl3d =
                             await GitHubGroup.getSingleUserCall.call(
-                          username: _model.usernameFieldController.text,
+                          username: _model.usernameFieldTextController.text,
                         );
+
                         if ((_model.apiResultl3d?.succeeded ?? true)) {
                           context.pushNamed(
                             'UserProfile',
                             queryParameters: {
                               'username': serializeParam(
-                                _model.usernameFieldController.text,
+                                _model.usernameFieldTextController.text,
                                 ParamType.String,
                               ),
                             }.withoutNulls,
                           );
 
-                          setState(() {
-                            FFAppState().addToSearches(
-                                _model.usernameFieldController.text);
-                          });
-                          setState(() {
-                            _model.usernameFieldController?.clear();
+                          FFAppState().addToSearches(
+                              _model.usernameFieldTextController.text);
+                          safeSetState(() {});
+                          safeSetState(() {
+                            _model.usernameFieldTextController?.clear();
                           });
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -266,7 +273,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                           );
                         }
 
-                        setState(() {});
+                        safeSetState(() {});
                       },
                       text: 'Search',
                       options: FFButtonOptions(
@@ -280,6 +287,7 @@ class _HomePageWidgetState extends State<HomePageWidget> {
                             FlutterFlowTheme.of(context).titleSmall.override(
                                   fontFamily: 'Inter',
                                   color: Colors.white,
+                                  letterSpacing: 0.0,
                                 ),
                         elevation: 3.0,
                         borderSide: BorderSide(

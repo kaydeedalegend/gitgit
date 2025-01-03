@@ -26,42 +26,49 @@ class RepoStruct extends BaseStruct {
   String? _ownerUserName;
   String get ownerUserName => _ownerUserName ?? '';
   set ownerUserName(String? val) => _ownerUserName = val;
+
   bool hasOwnerUserName() => _ownerUserName != null;
 
   // "repoName" field.
   String? _repoName;
   String get repoName => _repoName ?? '';
   set repoName(String? val) => _repoName = val;
+
   bool hasRepoName() => _repoName != null;
 
   // "repoDescription" field.
   String? _repoDescription;
   String get repoDescription => _repoDescription ?? '';
   set repoDescription(String? val) => _repoDescription = val;
+
   bool hasRepoDescription() => _repoDescription != null;
 
   // "visibility" field.
   String? _visibility;
   String get visibility => _visibility ?? '';
   set visibility(String? val) => _visibility = val;
+
   bool hasVisibility() => _visibility != null;
 
   // "repoLink" field.
   String? _repoLink;
   String get repoLink => _repoLink ?? '';
   set repoLink(String? val) => _repoLink = val;
+
   bool hasRepoLink() => _repoLink != null;
 
   // "repoId" field.
   String? _repoId;
   String get repoId => _repoId ?? '';
   set repoId(String? val) => _repoId = val;
+
   bool hasRepoId() => _repoId != null;
 
   // "is_favorite" field.
   bool? _isFavorite;
   bool get isFavorite => _isFavorite ?? false;
   set isFavorite(bool? val) => _isFavorite = val;
+
   bool hasIsFavorite() => _isFavorite != null;
 
   static RepoStruct fromMap(Map<String, dynamic> data) => RepoStruct(
@@ -75,7 +82,7 @@ class RepoStruct extends BaseStruct {
       );
 
   static RepoStruct? maybeFromMap(dynamic data) =>
-      data is Map<String, dynamic> ? RepoStruct.fromMap(data) : null;
+      data is Map ? RepoStruct.fromMap(data.cast<String, dynamic>()) : null;
 
   Map<String, dynamic> toMap() => {
         'ownerUserName': _ownerUserName,

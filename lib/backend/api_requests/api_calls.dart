@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import '../schema/structs/index.dart';
+
+import 'package:flutter/foundation.dart';
 
 import '/flutter_flow/flutter_flow_util.dart';
 import 'api_manager.dart';
@@ -11,7 +14,7 @@ const _kPrivateApiFunctionName = 'ffPrivateApiCall';
 /// Start GitHub Group Code
 
 class GitHubGroup {
-  static String baseUrl = 'api.github.com';
+  static String getBaseUrl() => 'api.github.com';
   static Map<String, String> headers = {
     'Authorization':
         'YmVhcmVyIGdpdGh1Yl9wYXRfMTFBTFVVTkFBMFhnek9RMk1acDVFNF8yeDZwdHRmOTZRZlVuV1U0VzJBMzJlQmlZSnhKY2FnbW9jeXBXc1hzZDU5NlZRTjJLREtjcTVkY3VJWA==',
@@ -28,9 +31,11 @@ class GetSingleUserCall {
   Future<ApiCallResponse> call({
     String? username = '',
   }) async {
+    final baseUrl = GitHubGroup.getBaseUrl();
+
     return ApiManager.instance.makeApiCall(
       callName: 'getSingleUser',
-      apiUrl: '${GitHubGroup.baseUrl}/users/${username}',
+      apiUrl: '${baseUrl}/users/${username}',
       callType: ApiCallType.GET,
       headers: {
         'Authorization':
@@ -43,6 +48,8 @@ class GetSingleUserCall {
       encodeBodyUtf8: false,
       decodeUtf8: false,
       cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
     );
   }
 
@@ -104,9 +111,11 @@ class GetUserFollowersCall {
   Future<ApiCallResponse> call({
     String? username = '',
   }) async {
+    final baseUrl = GitHubGroup.getBaseUrl();
+
     return ApiManager.instance.makeApiCall(
       callName: 'getUserFollowers',
-      apiUrl: '${GitHubGroup.baseUrl}/users/${username}/followers',
+      apiUrl: '${baseUrl}/users/${username}/followers',
       callType: ApiCallType.GET,
       headers: {
         'Authorization':
@@ -117,33 +126,45 @@ class GetUserFollowersCall {
       encodeBodyUtf8: false,
       decodeUtf8: false,
       cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
     );
   }
 
-  dynamic followerUsername(dynamic response) => getJsonField(
+  List<String>? followerUsername(dynamic response) => (getJsonField(
         response,
         r'''$[:].login''',
         true,
-      );
-  dynamic followerAvatar(dynamic response) => getJsonField(
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<String>(x))
+          .withoutNulls
+          .toList();
+  List<String>? followerAvatar(dynamic response) => (getJsonField(
         response,
         r'''$[:].avatar_url''',
         true,
-      );
-  dynamic followers(dynamic response) => getJsonField(
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<String>(x))
+          .withoutNulls
+          .toList();
+  List? followers(dynamic response) => getJsonField(
         response,
         r'''$''',
         true,
-      );
+      ) as List?;
 }
 
 class GetUserFollowingCall {
   Future<ApiCallResponse> call({
     String? username = '',
   }) async {
+    final baseUrl = GitHubGroup.getBaseUrl();
+
     return ApiManager.instance.makeApiCall(
       callName: 'getUserFollowing',
-      apiUrl: '${GitHubGroup.baseUrl}/users/${username}/following',
+      apiUrl: '${baseUrl}/users/${username}/following',
       callType: ApiCallType.GET,
       headers: {
         'Authorization':
@@ -154,19 +175,21 @@ class GetUserFollowingCall {
       encodeBodyUtf8: false,
       decodeUtf8: false,
       cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
     );
   }
 
-  dynamic followingUsername(dynamic response) => getJsonField(
+  List? followingUsername(dynamic response) => getJsonField(
         response,
         r'''$[:].login''',
         true,
-      );
-  dynamic followingAvatar(dynamic response) => getJsonField(
+      ) as List?;
+  List? followingAvatar(dynamic response) => getJsonField(
         response,
         r'''$[:].avatar_url''',
         true,
-      );
+      ) as List?;
   dynamic following(dynamic response) => getJsonField(
         response,
         r'''$''',
@@ -177,9 +200,11 @@ class GetUserReposCall {
   Future<ApiCallResponse> call({
     String? username = '',
   }) async {
+    final baseUrl = GitHubGroup.getBaseUrl();
+
     return ApiManager.instance.makeApiCall(
       callName: 'getUserRepos',
-      apiUrl: '${GitHubGroup.baseUrl}/users/${username}/repos',
+      apiUrl: '${baseUrl}/users/${username}/repos',
       callType: ApiCallType.GET,
       headers: {
         'Authorization':
@@ -190,54 +215,88 @@ class GetUserReposCall {
       encodeBodyUtf8: false,
       decodeUtf8: false,
       cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
     );
   }
 
-  dynamic repoName(dynamic response) => getJsonField(
+  List<String>? repoName(dynamic response) => (getJsonField(
         response,
         r'''$[:].name''',
         true,
-      );
-  dynamic ownerUsername(dynamic response) => getJsonField(
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<String>(x))
+          .withoutNulls
+          .toList();
+  List<String>? ownerUsername(dynamic response) => (getJsonField(
         response,
         r'''$[:].owner.login''',
         true,
-      );
-  dynamic repoVisibility(dynamic response) => getJsonField(
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<String>(x))
+          .withoutNulls
+          .toList();
+  List<String>? repoVisibility(dynamic response) => (getJsonField(
         response,
         r'''$[:].visibility''',
         true,
-      );
-  dynamic repoDescription(dynamic response) => getJsonField(
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<String>(x))
+          .withoutNulls
+          .toList();
+  List<String>? repoDescription(dynamic response) => (getJsonField(
         response,
         r'''$[:].description''',
         true,
-      );
-  dynamic repoLanguage(dynamic response) => getJsonField(
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<String>(x))
+          .withoutNulls
+          .toList();
+  List<String>? repoLanguage(dynamic response) => (getJsonField(
         response,
         r'''$[:].language''',
         true,
-      );
-  dynamic repoDefaultBranch(dynamic response) => getJsonField(
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<String>(x))
+          .withoutNulls
+          .toList();
+  List<String>? repoDefaultBranch(dynamic response) => (getJsonField(
         response,
         r'''$[:].default_branch''',
         true,
-      );
-  dynamic repos(dynamic response) => getJsonField(
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<String>(x))
+          .withoutNulls
+          .toList();
+  List? repos(dynamic response) => getJsonField(
         response,
         r'''$''',
         true,
-      );
-  dynamic url(dynamic response) => getJsonField(
+      ) as List?;
+  List<String>? url(dynamic response) => (getJsonField(
         response,
         r'''$[:].html_url''',
         true,
-      );
-  dynamic repoId(dynamic response) => getJsonField(
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<String>(x))
+          .withoutNulls
+          .toList();
+  List<int>? repoId(dynamic response) => (getJsonField(
         response,
         r'''$[:].id''',
         true,
-      );
+      ) as List?)
+          ?.withoutNulls
+          .map((x) => castToType<int>(x))
+          .withoutNulls
+          .toList();
 }
 
 class GetRepoLanguagesCall {
@@ -245,9 +304,11 @@ class GetRepoLanguagesCall {
     String? username = '',
     String? repoName = '',
   }) async {
+    final baseUrl = GitHubGroup.getBaseUrl();
+
     return ApiManager.instance.makeApiCall(
       callName: 'getRepoLanguages',
-      apiUrl: '${GitHubGroup.baseUrl}/repos/${username}/${repoName}/languages',
+      apiUrl: '${baseUrl}/repos/${username}/${repoName}/languages',
       callType: ApiCallType.GET,
       headers: {
         'Authorization':
@@ -258,23 +319,27 @@ class GetRepoLanguagesCall {
       encodeBodyUtf8: false,
       decodeUtf8: false,
       cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
     );
   }
 
-  dynamic languages(dynamic response) => getJsonField(
+  List? languages(dynamic response) => getJsonField(
         response,
         r'''$''',
         true,
-      );
+      ) as List?;
 }
 
 class GetSingleRepoCall {
   Future<ApiCallResponse> call({
     String? repoId = '',
   }) async {
+    final baseUrl = GitHubGroup.getBaseUrl();
+
     return ApiManager.instance.makeApiCall(
       callName: 'getSingleRepo',
-      apiUrl: '${GitHubGroup.baseUrl}/repositories/${repoId}',
+      apiUrl: '${baseUrl}/repositories/${repoId}',
       callType: ApiCallType.GET,
       headers: {
         'Authorization':
@@ -285,6 +350,8 @@ class GetSingleRepoCall {
       encodeBodyUtf8: false,
       decodeUtf8: false,
       cache: false,
+      isStreamingApi: false,
+      alwaysAllowBody: false,
     );
   }
 
@@ -332,11 +399,18 @@ class ApiPagingParams {
       'PagingParams(nextPageNumber: $nextPageNumber, numItems: $numItems, lastResponse: $lastResponse,)';
 }
 
+String _toEncodable(dynamic item) {
+  return item;
+}
+
 String _serializeList(List? list) {
   list ??= <String>[];
   try {
-    return json.encode(list);
+    return json.encode(list, toEncodable: _toEncodable);
   } catch (_) {
+    if (kDebugMode) {
+      print("List serialization failed. Returning empty list.");
+    }
     return '[]';
   }
 }
@@ -344,8 +418,11 @@ String _serializeList(List? list) {
 String _serializeJson(dynamic jsonVar, [bool isList = false]) {
   jsonVar ??= (isList ? [] : {});
   try {
-    return json.encode(jsonVar);
+    return json.encode(jsonVar, toEncodable: _toEncodable);
   } catch (_) {
+    if (kDebugMode) {
+      print("Json serialization failed. Returning empty json.");
+    }
     return isList ? '[]' : '{}';
   }
 }

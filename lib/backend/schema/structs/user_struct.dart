@@ -16,12 +16,14 @@ class UserStruct extends BaseStruct {
   String? _username;
   String get username => _username ?? '';
   set username(String? val) => _username = val;
+
   bool hasUsername() => _username != null;
 
   // "userPhoto" field.
   String? _userPhoto;
   String get userPhoto => _userPhoto ?? '';
   set userPhoto(String? val) => _userPhoto = val;
+
   bool hasUserPhoto() => _userPhoto != null;
 
   static UserStruct fromMap(Map<String, dynamic> data) => UserStruct(
@@ -30,7 +32,7 @@ class UserStruct extends BaseStruct {
       );
 
   static UserStruct? maybeFromMap(dynamic data) =>
-      data is Map<String, dynamic> ? UserStruct.fromMap(data) : null;
+      data is Map ? UserStruct.fromMap(data.cast<String, dynamic>()) : null;
 
   Map<String, dynamic> toMap() => {
         'username': _username,

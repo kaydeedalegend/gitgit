@@ -5,9 +5,10 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_toggle_icon.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:math';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -18,14 +19,14 @@ export 'user_repo_list_model.dart';
 
 class UserRepoListWidget extends StatefulWidget {
   const UserRepoListWidget({
-    Key? key,
+    super.key,
     required this.username,
-  }) : super(key: key);
+  });
 
   final String? username;
 
   @override
-  _UserRepoListWidgetState createState() => _UserRepoListWidgetState();
+  State<UserRepoListWidget> createState() => _UserRepoListWidgetState();
 }
 
 class _UserRepoListWidgetState extends State<UserRepoListWidget>
@@ -34,40 +35,41 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   var hasToggleIconTriggered = false;
-  final animationsMap = {
-    'cardOnPageLoadAnimation': AnimationInfo(
-      trigger: AnimationTrigger.onPageLoad,
-      effects: [
-        VisibilityEffect(duration: 1.ms),
-        MoveEffect(
-          curve: Curves.elasticOut,
-          delay: 0.ms,
-          duration: 600.ms,
-          begin: Offset(0.0, 20.0),
-          end: Offset(0.0, 0.0),
-        ),
-      ],
-    ),
-    'toggleIconOnActionTriggerAnimation': AnimationInfo(
-      trigger: AnimationTrigger.onActionTrigger,
-      applyInitialState: false,
-      effects: [
-        ScaleEffect(
-          curve: Curves.bounceOut,
-          delay: 200.ms,
-          duration: 1000.ms,
-          begin: Offset(0.5, 0.5),
-          end: Offset(1.0, 1.0),
-        ),
-      ],
-    ),
-  };
+  final animationsMap = <String, AnimationInfo>{};
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => UserRepoListModel());
 
+    animationsMap.addAll({
+      'cardOnPageLoadAnimation': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          VisibilityEffect(duration: 1.ms),
+          MoveEffect(
+            curve: Curves.elasticOut,
+            delay: 0.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.0, 20.0),
+            end: Offset(0.0, 0.0),
+          ),
+        ],
+      ),
+      'toggleIconOnActionTriggerAnimation': AnimationInfo(
+        trigger: AnimationTrigger.onActionTrigger,
+        applyInitialState: false,
+        effectsBuilder: () => [
+          ScaleEffect(
+            curve: Curves.bounceOut,
+            delay: 200.0.ms,
+            duration: 1000.0.ms,
+            begin: Offset(0.5, 0.5),
+            end: Offset(1.0, 1.0),
+          ),
+        ],
+      ),
+    });
     setupAnimations(
       animationsMap.values.where((anim) =>
           anim.trigger == AnimationTrigger.onActionTrigger ||
@@ -75,7 +77,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
       this,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -87,20 +89,11 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
 
   @override
   Widget build(BuildContext context) {
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
-
     context.watch<FFAppState>();
 
     return FutureBuilder<ApiCallResponse>(
       future: GitHubGroup.getUserReposCall.call(
-        username: widget.username,
+        username: widget!.username,
       ),
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
@@ -121,10 +114,12 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
           );
         }
         final userRepoListGetUserReposResponse = snapshot.data!;
+
         return GestureDetector(
-          onTap: () => _model.unfocusNode.canRequestFocus
-              ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-              : FocusScope.of(context).unfocus(),
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
           child: Scaffold(
             key: scaffoldKey,
             backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -178,6 +173,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                         fontFamily: 'Inter',
                                         color: Colors.white,
                                         fontSize: 24.0,
+                                        letterSpacing: 0.0,
                                         fontWeight: FontWeight.w600,
                                       ),
                                 ),
@@ -223,6 +219,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                           ),
                         );
                       }
+
                       return ListView.builder(
                         padding: EdgeInsets.zero,
                         scrollDirection: Axis.vertical,
@@ -279,9 +276,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                                 BorderRadius.circular(4.0),
                                           ),
                                           child: Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    5.0, 5.0, 5.0, 5.0),
+                                            padding: EdgeInsets.all(5.0),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               mainAxisAlignment:
@@ -312,6 +307,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                                                   .of(context)
                                                               .primaryText,
                                                           fontSize: 12.0,
+                                                          letterSpacing: 0.0,
                                                         ),
                                                   ),
                                                 ),
@@ -322,7 +318,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                       ),
                                       ToggleIcon(
                                         onPressed: () async {
-                                          setState(
+                                          safeSetState(
                                             () => FFAppState()
                                                     .favRepos
                                                     .contains(getJsonField(
@@ -347,24 +343,22 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                                 reposItem,
                                                 r'''$.repoId''',
                                               ).toString())) {
-                                            setState(() {
-                                              FFAppState().removeFromFavRepos(
-                                                  FFAppState()
-                                                      .favRepos
-                                                      .contains(getJsonField(
-                                                        reposItem,
-                                                        r'''$.id''',
-                                                      ).toString())
-                                                      .toString());
-                                            });
+                                            FFAppState()
+                                                .removeFromFavRepos(FFAppState()
+                                                    .favRepos
+                                                    .contains(getJsonField(
+                                                      reposItem,
+                                                      r'''$.id''',
+                                                    ).toString())
+                                                    .toString());
+                                            safeSetState(() {});
                                           } else {
-                                            setState(() {
-                                              FFAppState()
-                                                  .addToFavRepos(getJsonField(
-                                                reposItem,
-                                                r'''$.id''',
-                                              ).toString());
-                                            });
+                                            FFAppState()
+                                                .addToFavRepos(getJsonField(
+                                              reposItem,
+                                              r'''$.id''',
+                                            ).toString());
+                                            safeSetState(() {});
                                           }
                                         },
                                         value: FFAppState()
@@ -397,8 +391,12 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                       reposItem,
                                       r'''$.name''',
                                     ).toString(),
-                                    style:
-                                        FlutterFlowTheme.of(context).titleLarge,
+                                    style: FlutterFlowTheme.of(context)
+                                        .titleLarge
+                                        .override(
+                                          fontFamily: 'Inter',
+                                          letterSpacing: 0.0,
+                                        ),
                                   ),
                                   Text(
                                     getJsonField(
@@ -410,6 +408,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                         .override(
                                           fontFamily: 'Inter',
                                           fontSize: 12.0,
+                                          letterSpacing: 0.0,
                                         ),
                                   ),
                                   Row(
@@ -417,7 +416,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                     children: [
                                       Align(
                                         alignment:
-                                            AlignmentDirectional(0.00, 0.00),
+                                            AlignmentDirectional(0.0, 0.0),
                                         child: Card(
                                           clipBehavior:
                                               Clip.antiAliasWithSaveLayer,
@@ -428,9 +427,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                                 BorderRadius.circular(4.0),
                                           ),
                                           child: Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    5.0, 5.0, 5.0, 5.0),
+                                            padding: EdgeInsets.all(5.0),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               mainAxisAlignment:
@@ -461,6 +458,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                                                   .of(context)
                                                               .primaryText,
                                                           fontSize: 10.0,
+                                                          letterSpacing: 0.0,
                                                         ),
                                                   ),
                                                 ),
@@ -490,9 +488,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                                 BorderRadius.circular(4.0),
                                           ),
                                           child: Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    5.0, 5.0, 5.0, 5.0),
+                                            padding: EdgeInsets.all(5.0),
                                             child: Row(
                                               mainAxisSize: MainAxisSize.min,
                                               mainAxisAlignment:
@@ -520,6 +516,7 @@ class _UserRepoListWidgetState extends State<UserRepoListWidget>
                                                                   .of(context)
                                                               .primaryText,
                                                           fontSize: 10.0,
+                                                          letterSpacing: 0.0,
                                                         ),
                                                   ),
                                                 ),

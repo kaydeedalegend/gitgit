@@ -4,10 +4,11 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:math';
+import 'dart:ui';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -17,14 +18,14 @@ export 'followers_list_model.dart';
 
 class FollowersListWidget extends StatefulWidget {
   const FollowersListWidget({
-    Key? key,
+    super.key,
     required this.username,
-  }) : super(key: key);
+  });
 
   final String? username;
 
   @override
-  _FollowersListWidgetState createState() => _FollowersListWidgetState();
+  State<FollowersListWidget> createState() => _FollowersListWidgetState();
 }
 
 class _FollowersListWidgetState extends State<FollowersListWidget>
@@ -33,32 +34,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
-  final animationsMap = {
-    'cardOnPageLoadAnimation1': AnimationInfo(
-      trigger: AnimationTrigger.onPageLoad,
-      effects: [
-        MoveEffect(
-          curve: Curves.bounceOut,
-          delay: 50.ms,
-          duration: 600.ms,
-          begin: Offset(0.0, 20.0),
-          end: Offset(0.0, 0.0),
-        ),
-      ],
-    ),
-    'cardOnPageLoadAnimation2': AnimationInfo(
-      trigger: AnimationTrigger.onPageLoad,
-      effects: [
-        MoveEffect(
-          curve: Curves.bounceOut,
-          delay: 50.ms,
-          duration: 600.ms,
-          begin: Offset(0.0, 20.0),
-          end: Offset(0.0, 0.0),
-        ),
-      ],
-    ),
-  };
+  final animationsMap = <String, AnimationInfo>{};
 
   @override
   void initState() {
@@ -69,9 +45,35 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
       vsync: this,
       length: 2,
       initialIndex: 0,
-    )..addListener(() => setState(() {}));
+    )..addListener(() => safeSetState(() {}));
+    animationsMap.addAll({
+      'cardOnPageLoadAnimation1': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          MoveEffect(
+            curve: Curves.bounceOut,
+            delay: 50.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.0, 20.0),
+            end: Offset(0.0, 0.0),
+          ),
+        ],
+      ),
+      'cardOnPageLoadAnimation2': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          MoveEffect(
+            curve: Curves.bounceOut,
+            delay: 50.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.0, 20.0),
+            end: Offset(0.0, 0.0),
+          ),
+        ],
+      ),
+    });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -83,21 +85,11 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
 
   @override
   Widget build(BuildContext context) {
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
-
-    context.watch<FFAppState>();
-
     return GestureDetector(
-      onTap: () => _model.unfocusNode.canRequestFocus
-          ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-          : FocusScope.of(context).unfocus(),
+      onTap: () {
+        FocusScope.of(context).unfocus();
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
       child: Scaffold(
         key: scaffoldKey,
         backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -150,6 +142,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                     fontFamily: 'Inter',
                                     color: Colors.white,
                                     fontSize: 24.0,
+                                    letterSpacing: 0.0,
                                     fontWeight: FontWeight.w600,
                                   ),
                             ),
@@ -186,12 +179,15 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                     child: TabBar(
                       labelColor: FlutterFlowTheme.of(context).primaryText,
                       unselectedLabelColor: Color(0x64EEF7F4),
-                      labelStyle: FlutterFlowTheme.of(context).titleSmall,
+                      labelStyle:
+                          FlutterFlowTheme.of(context).titleSmall.override(
+                                fontFamily: 'Inter',
+                                letterSpacing: 0.0,
+                              ),
                       unselectedLabelStyle: TextStyle(),
                       indicatorColor: Color(0x00020303),
                       indicatorWeight: 2.0,
-                      padding:
-                          EdgeInsetsDirectional.fromSTEB(4.0, 4.0, 4.0, 4.0),
+                      padding: EdgeInsets.all(4.0),
                       tabs: [
                         Tab(
                           text: 'Followers',
@@ -201,6 +197,9 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                         ),
                       ],
                       controller: _model.tabBarController,
+                      onTap: (i) async {
+                        [() async {}, () async {}][i]();
+                      },
                     ),
                   ),
                   Expanded(
@@ -212,7 +211,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                   Completer<ApiCallResponse>()
                                     ..complete(
                                         GitHubGroup.getUserFollowersCall.call(
-                                      username: widget.username,
+                                      username: widget!.username,
                                     )))
                               .future,
                           builder: (context, snapshot) {
@@ -232,6 +231,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                             }
                             final gridViewGetUserFollowersResponse =
                                 snapshot.data!;
+
                             return Builder(
                               builder: (context) {
                                 final userFollowers =
@@ -250,9 +250,10 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                     ),
                                   );
                                 }
+
                                 return RefreshIndicator(
                                   onRefresh: () async {
-                                    setState(() =>
+                                    safeSetState(() =>
                                         _model.apiRequestCompleter1 = null);
                                     await _model.waitForApiRequestCompleted1();
                                   },
@@ -300,9 +301,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                                 BorderRadius.circular(8.0),
                                           ),
                                           child: Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    16.0, 16.0, 16.0, 16.0),
+                                            padding: EdgeInsets.all(16.0),
                                             child: Column(
                                               mainAxisSize: MainAxisSize.max,
                                               mainAxisAlignment:
@@ -328,9 +327,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                                   ),
                                                   child: Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
-                                                            .fromSTEB(4.0, 4.0,
-                                                                4.0, 4.0),
+                                                        EdgeInsets.all(4.0),
                                                     child: Container(
                                                       width: 120.0,
                                                       height: 120.0,
@@ -343,7 +340,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                                         getJsonField(
                                                           userFollowersItem,
                                                           r'''$.avatar_url''',
-                                                        ),
+                                                        ).toString(),
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
@@ -368,6 +365,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                                         .titleMedium
                                                         .override(
                                                           fontFamily: 'Inter',
+                                                          letterSpacing: 0.0,
                                                           fontWeight:
                                                               FontWeight.w600,
                                                         ),
@@ -391,7 +389,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                   Completer<ApiCallResponse>()
                                     ..complete(
                                         GitHubGroup.getUserFollowingCall.call(
-                                      username: widget.username,
+                                      username: widget!.username,
                                     )))
                               .future,
                           builder: (context, snapshot) {
@@ -411,6 +409,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                             }
                             final gridViewGetUserFollowingResponse =
                                 snapshot.data!;
+
                             return Builder(
                               builder: (context) {
                                 final userFollowing = GitHubGroup
@@ -427,9 +426,10 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                     ),
                                   );
                                 }
+
                                 return RefreshIndicator(
                                   onRefresh: () async {
-                                    setState(() =>
+                                    safeSetState(() =>
                                         _model.apiRequestCompleter2 = null);
                                     await _model.waitForApiRequestCompleted2();
                                   },
@@ -477,9 +477,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                                 BorderRadius.circular(8.0),
                                           ),
                                           child: Padding(
-                                            padding:
-                                                EdgeInsetsDirectional.fromSTEB(
-                                                    16.0, 16.0, 16.0, 16.0),
+                                            padding: EdgeInsets.all(16.0),
                                             child: Column(
                                               mainAxisSize: MainAxisSize.max,
                                               mainAxisAlignment:
@@ -505,9 +503,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                                   ),
                                                   child: Padding(
                                                     padding:
-                                                        EdgeInsetsDirectional
-                                                            .fromSTEB(4.0, 4.0,
-                                                                4.0, 4.0),
+                                                        EdgeInsets.all(4.0),
                                                     child: Container(
                                                       width: 120.0,
                                                       height: 120.0,
@@ -520,7 +516,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                                         getJsonField(
                                                           userFollowingItem,
                                                           r'''$.avatar_url''',
-                                                        ),
+                                                        ).toString(),
                                                         fit: BoxFit.cover,
                                                       ),
                                                     ),
@@ -545,6 +541,7 @@ class _FollowersListWidgetState extends State<FollowersListWidget>
                                                         .titleMedium
                                                         .override(
                                                           fontFamily: 'Inter',
+                                                          letterSpacing: 0.0,
                                                           fontWeight:
                                                               FontWeight.w600,
                                                         ),

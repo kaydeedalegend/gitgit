@@ -5,10 +5,11 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_toggle_icon.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/flutter_flow_widgets.dart';
+import 'dart:math';
+import 'dart:ui';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,14 +19,14 @@ export 'user_profile_model.dart';
 
 class UserProfileWidget extends StatefulWidget {
   const UserProfileWidget({
-    Key? key,
+    super.key,
     required this.username,
-  }) : super(key: key);
+  });
 
   final String? username;
 
   @override
-  _UserProfileWidgetState createState() => _UserProfileWidgetState();
+  State<UserProfileWidget> createState() => _UserProfileWidgetState();
 }
 
 class _UserProfileWidgetState extends State<UserProfileWidget>
@@ -34,66 +35,67 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   var hasToggleIconTriggered = false;
-  final animationsMap = {
-    'cardOnPageLoadAnimation1': AnimationInfo(
-      trigger: AnimationTrigger.onPageLoad,
-      effects: [
-        VisibilityEffect(duration: 100.ms),
-        MoveEffect(
-          curve: Curves.elasticOut,
-          delay: 100.ms,
-          duration: 600.ms,
-          begin: Offset(0.0, 20.0),
-          end: Offset(0.0, 0.0),
-        ),
-      ],
-    ),
-    'cardOnPageLoadAnimation2': AnimationInfo(
-      trigger: AnimationTrigger.onPageLoad,
-      effects: [
-        VisibilityEffect(duration: 200.ms),
-        MoveEffect(
-          curve: Curves.elasticOut,
-          delay: 200.ms,
-          duration: 600.ms,
-          begin: Offset(0.0, 20.0),
-          end: Offset(0.0, 0.0),
-        ),
-      ],
-    ),
-    'cardOnPageLoadAnimation3': AnimationInfo(
-      trigger: AnimationTrigger.onPageLoad,
-      effects: [
-        VisibilityEffect(duration: 300.ms),
-        MoveEffect(
-          curve: Curves.elasticOut,
-          delay: 300.ms,
-          duration: 600.ms,
-          begin: Offset(0.0, 20.0),
-          end: Offset(0.0, 0.0),
-        ),
-      ],
-    ),
-    'toggleIconOnActionTriggerAnimation': AnimationInfo(
-      trigger: AnimationTrigger.onActionTrigger,
-      applyInitialState: false,
-      effects: [
-        ScaleEffect(
-          curve: Curves.bounceOut,
-          delay: 100.ms,
-          duration: 600.ms,
-          begin: Offset(0.5, 0.5),
-          end: Offset(1.0, 1.0),
-        ),
-      ],
-    ),
-  };
+  final animationsMap = <String, AnimationInfo>{};
 
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => UserProfileModel());
 
+    animationsMap.addAll({
+      'cardOnPageLoadAnimation1': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          VisibilityEffect(duration: 100.ms),
+          MoveEffect(
+            curve: Curves.elasticOut,
+            delay: 100.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.0, 20.0),
+            end: Offset(0.0, 0.0),
+          ),
+        ],
+      ),
+      'cardOnPageLoadAnimation2': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          VisibilityEffect(duration: 200.ms),
+          MoveEffect(
+            curve: Curves.elasticOut,
+            delay: 200.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.0, 20.0),
+            end: Offset(0.0, 0.0),
+          ),
+        ],
+      ),
+      'cardOnPageLoadAnimation3': AnimationInfo(
+        trigger: AnimationTrigger.onPageLoad,
+        effectsBuilder: () => [
+          VisibilityEffect(duration: 300.ms),
+          MoveEffect(
+            curve: Curves.elasticOut,
+            delay: 300.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.0, 20.0),
+            end: Offset(0.0, 0.0),
+          ),
+        ],
+      ),
+      'toggleIconOnActionTriggerAnimation': AnimationInfo(
+        trigger: AnimationTrigger.onActionTrigger,
+        applyInitialState: false,
+        effectsBuilder: () => [
+          ScaleEffect(
+            curve: Curves.bounceOut,
+            delay: 100.0.ms,
+            duration: 600.0.ms,
+            begin: Offset(0.5, 0.5),
+            end: Offset(1.0, 1.0),
+          ),
+        ],
+      ),
+    });
     setupAnimations(
       animationsMap.values.where((anim) =>
           anim.trigger == AnimationTrigger.onActionTrigger ||
@@ -101,7 +103,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
       this,
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => setState(() {}));
+    WidgetsBinding.instance.addPostFrameCallback((_) => safeSetState(() {}));
   }
 
   @override
@@ -113,20 +115,11 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
 
   @override
   Widget build(BuildContext context) {
-    if (isiOS) {
-      SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(
-          statusBarBrightness: Theme.of(context).brightness,
-          systemStatusBarContrastEnforced: true,
-        ),
-      );
-    }
-
     context.watch<FFAppState>();
 
     return FutureBuilder<ApiCallResponse>(
       future: GitHubGroup.getSingleUserCall.call(
-        username: widget.username,
+        username: widget!.username,
       ),
       builder: (context, snapshot) {
         // Customize what your widget looks like when it's loading.
@@ -147,10 +140,12 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
           );
         }
         final userProfileGetSingleUserResponse = snapshot.data!;
+
         return GestureDetector(
-          onTap: () => _model.unfocusNode.canRequestFocus
-              ? FocusScope.of(context).requestFocus(_model.unfocusNode)
-              : FocusScope.of(context).unfocus(),
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            FocusManager.instance.primaryFocus?.unfocus();
+          },
           child: Scaffold(
             key: scaffoldKey,
             backgroundColor: FlutterFlowTheme.of(context).primaryBackground,
@@ -208,6 +203,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                             fontFamily: 'Inter',
                                             color: Colors.white,
                                             fontSize: 24.0,
+                                            letterSpacing: 0.0,
                                             fontWeight: FontWeight.w600,
                                           ),
                                     ),
@@ -219,7 +215,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                     0.0, 0.0, 16.0, 0.0),
                                 child: ToggleIcon(
                                   onPressed: () async {
-                                    setState(
+                                    safeSetState(
                                       () => FFAppState().favUsers.contains(
                                               GitHubGroup.getSingleUserCall
                                                   .username(
@@ -245,25 +241,23 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                     if (GitHubGroup.getSingleUserCall.username(
                                       userProfileGetSingleUserResponse.jsonBody,
                                     )) {
-                                      setState(() {
-                                        FFAppState().removeFromFavUsers(
-                                            GitHubGroup.getSingleUserCall
-                                                .username(
-                                                  userProfileGetSingleUserResponse
-                                                      .jsonBody,
-                                                )
-                                                .toString());
-                                      });
+                                      FFAppState().removeFromFavUsers(
+                                          GitHubGroup.getSingleUserCall
+                                              .username(
+                                                userProfileGetSingleUserResponse
+                                                    .jsonBody,
+                                              )
+                                              .toString());
+                                      safeSetState(() {});
                                     } else {
-                                      setState(() {
-                                        FFAppState().addToFavUsers(
-                                            GitHubGroup.getSingleUserCall
-                                                .username(
-                                                  userProfileGetSingleUserResponse
-                                                      .jsonBody,
-                                                )
-                                                .toString());
-                                      });
+                                      FFAppState().addToFavUsers(
+                                          GitHubGroup.getSingleUserCall
+                                              .username(
+                                                userProfileGetSingleUserResponse
+                                                    .jsonBody,
+                                              )
+                                              .toString());
+                                      safeSetState(() {});
                                     }
                                   },
                                   value: FFAppState()
@@ -346,8 +340,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                   ),
                                 ),
                                 child: Padding(
-                                  padding: EdgeInsetsDirectional.fromSTEB(
-                                      4.0, 4.0, 4.0, 4.0),
+                                  padding: EdgeInsets.all(4.0),
                                   child: Container(
                                     width: 120.0,
                                     height: 120.0,
@@ -358,9 +351,10 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                     child: Image.network(
                                       GitHubGroup.getSingleUserCall
                                           .userPhotoUrl(
-                                        userProfileGetSingleUserResponse
-                                            .jsonBody,
-                                      ),
+                                            userProfileGetSingleUserResponse
+                                                .jsonBody,
+                                          )
+                                          .toString(),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -376,8 +370,12 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                             .jsonBody,
                                       )
                                       .toString(),
-                                  style:
-                                      FlutterFlowTheme.of(context).titleLarge,
+                                  style: FlutterFlowTheme.of(context)
+                                      .titleLarge
+                                      .override(
+                                        fontFamily: 'Inter',
+                                        letterSpacing: 0.0,
+                                      ),
                                 ),
                               ),
                               Padding(
@@ -444,6 +442,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                                         color:
                                                             Color(0x9AEEF7F4),
                                                         fontSize: 12.0,
+                                                        letterSpacing: 0.0,
                                                       ),
                                                 ),
                                               ),
@@ -495,6 +494,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                                           color:
                                                               Color(0x99EEF7F4),
                                                           fontSize: 12.0,
+                                                          letterSpacing: 0.0,
                                                         ),
                                               ),
                                             ),
@@ -517,6 +517,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                           .titleMedium
                                           .override(
                                             fontFamily: 'Inter',
+                                            letterSpacing: 0.0,
                                             fontWeight: FontWeight.w500,
                                           ),
                                     ),
@@ -539,6 +540,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                             .override(
                                               fontFamily: 'Inter',
                                               fontSize: 12.0,
+                                              letterSpacing: 0.0,
                                             ),
                                       ),
                                     ),
@@ -619,6 +621,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                                                   .of(context)
                                                               .primaryText,
                                                           fontSize: 12.0,
+                                                          letterSpacing: 0.0,
                                                         ),
                                               ),
                                             ),
@@ -640,6 +643,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                                       .override(
                                                         fontFamily: 'Inter',
                                                         fontSize: 24.0,
+                                                        letterSpacing: 0.0,
                                                       ),
                                             ),
                                           ),
@@ -684,6 +688,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                                                   .of(context)
                                                               .primaryText,
                                                           fontSize: 12.0,
+                                                          letterSpacing: 0.0,
                                                         ),
                                               ),
                                             ),
@@ -705,6 +710,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                                       .override(
                                                         fontFamily: 'Inter',
                                                         fontSize: 24.0,
+                                                        letterSpacing: 0.0,
                                                       ),
                                             ),
                                           ),
@@ -788,6 +794,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                                                   .of(context)
                                                               .primaryText,
                                                           fontSize: 12.0,
+                                                          letterSpacing: 0.0,
                                                         ),
                                               ),
                                             ),
@@ -809,6 +816,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                                       .override(
                                                         fontFamily: 'Inter',
                                                         fontSize: 24.0,
+                                                        letterSpacing: 0.0,
                                                       ),
                                             ),
                                           ),
@@ -853,6 +861,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                                                   .of(context)
                                                               .primaryText,
                                                           fontSize: 12.0,
+                                                          letterSpacing: 0.0,
                                                         ),
                                               ),
                                             ),
@@ -874,6 +883,7 @@ class _UserProfileWidgetState extends State<UserProfileWidget>
                                                       .override(
                                                         fontFamily: 'Inter',
                                                         fontSize: 24.0,
+                                                        letterSpacing: 0.0,
                                                       ),
                                             ),
                                           ),
